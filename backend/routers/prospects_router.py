@@ -37,12 +37,16 @@ def get_states():
 
 @router.get("/cities/{uf}")
 def get_cities(uf: str, db: Session = Depends(get_db)):
-    """Get list of cities for a state (from imported data)."""
-    cities = (
-        db.query(Company.municipio_nome)
-        .filter(Company.uf == uf.upper(), Company.municipio_nome.isnot(None))
-        .distinct()
-        .order_by(Company.municipio_nome)
-        .all()
-    )
+    cities = db.query(Municipality.nome).filter(Municipality.nome.isnot(None)).distinct().order_by(Municipality.nome).all()
+    
+    # Se IBGE nao estiver baixado, retorna vazio para não quebrar a UI
+    if not cities:
+        # Fallback para as empresas importadas caso a tabela de municípios esteja vazia
+        cities = (
+            db.query(Company.municipio_nome)
+            .filter(Company.uf == uf.upper(), Company.municipio_nome.isnot(None))
+            .distinct()
+            .order_by(Company.municipio_nome)
+            .all()
+        )
     return [{"name": city[0]} for city in cities if city[0]]

@@ -217,12 +217,17 @@ async function loadCities() {
         const res = await fetch(`${API_BASE}/api/prospects/cities/${uf}`);
         const cities = await res.json();
 
-        cities.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c.name;
-            opt.textContent = c.name;
-            citySelect.appendChild(opt);
-        });
+        // Limpa o select antes de adicionar
+        citySelect.innerHTML = '<option value="">Selecione a cidade</option>';
+
+        if (Array.isArray(cities)) {
+            cities.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name;
+                citySelect.appendChild(opt);
+            });
+        }
     } catch (err) {
         console.error('Error loading cities:', err);
     }

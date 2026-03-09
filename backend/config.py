@@ -8,7 +8,9 @@ else:
     DATA_DIR = BASE_DIR / "data"
     DATA_DIR.mkdir(exist_ok=True)
 
-DATABASE_URL = f"sqlite:///{DATA_DIR}/prospectabr.db"
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR}/prospectabr.db")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 SECRET_KEY = os.getenv("SECRET_KEY", "prospectabr-dev-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours

@@ -37,11 +37,25 @@ def get_states():
 
 @router.get("/cities/{uf}")
 def get_cities(uf: str, db: Session = Depends(get_db)):
-    cities = db.query(Municipality.nome).filter(Municipality.nome.isnot(None)).distinct().order_by(Municipality.nome).all()
+    """Get list of cities for a state using IBGE API or database."""
+    import urllib.request
+    import json
     
-    # Se IBGE nao estiver baixado, retorna vazio para não quebrar a UI
+    # Tenta buscar diretamente da API pública do IBGE para garantir que sempre tenha os dados na Vercel
+    try:
+        url = f"https://servicodados.ibge.gov.br/api/v1/localidades/estados/{uf}/municipios"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.getcode() == 200:
+                data = response.read()
+                municipios = json.loads(data)
+                return [{"name": m["nome"]} for m in municipios]
+    except Exception as e:
+        print(f"Erro ao buscar municípios no IBGE: {e}")
+
+    # Fallback para banco local
+    cities = db.query(Municipality.nome).filter(Municipality.nome.isnot(None)).distinct().order_by(Municipality.nome).all()
     if not cities:
-        # Fallback para as empresas importadas caso a tabela de municípios esteja vazia
         cities = (
             db.query(Company.municipio_nome)
             .filter(Company.uf == uf.upper(), Company.municipio_nome.isnot(None))

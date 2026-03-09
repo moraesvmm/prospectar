@@ -40,14 +40,17 @@ def get_cities(uf: str, db: Session = Depends(get_db)):
     """Get list of cities for a state using IBGE API or database."""
     import urllib.request
     import json
+    import gzip
     
     # Tenta buscar diretamente da API pública do IBGE para garantir que sempre tenha os dados na Vercel
     try:
         url = f"https://servicodados.ibge.gov.br/api/v1/localidades/estados/{uf}/municipios"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0', 'Accept-Encoding': 'gzip'})
         with urllib.request.urlopen(req, timeout=5) as response:
             if response.getcode() == 200:
                 data = response.read()
+                if response.info().get('Content-Encoding') == 'gzip' or data.startswith(b'\x1f\x8b'):
+                    data = gzip.decompress(data)
                 municipios = json.loads(data)
                 return [{"name": m["nome"]} for m in municipios]
     except Exception as e:

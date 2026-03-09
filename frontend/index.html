@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ProspectaBR - Sistema inteligente de prospecção B2B. Encontre clientes reais usando dados da Receita Federal e Inteligência Artificial.">
+    <title>ProspectaBR — Prospecção Inteligente de Clientes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="url(#grad1)" stroke-width="2.5"/>
+                    <path d="M10 16L14 20L22 12" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="grad1" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#818cf8"/>
+                            <stop offset="100%" stop-color="#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <span class="brand-text">Prospecta<span class="brand-accent">BR</span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#" onclick="showPage('home')" class="nav-link active" id="nav-home">Início</a>
+            <a href="#" onclick="showPage('search')" class="nav-link" id="nav-search">Prospectar</a>
+            <a href="#" onclick="showPage('data')" class="nav-link" id="nav-data">Base de Dados</a>
+        </div>
+        <div class="nav-actions">
+            <div id="authButtons">
+                <button class="btn btn-ghost" onclick="showModal('login')">Entrar</button>
+                <button class="btn btn-primary" onclick="showModal('register')">Cadastrar</button>
+            </div>
+            <div id="userMenu" class="user-menu hidden">
+                <span id="userName" class="user-name"></span>
+                <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / Home Page -->
+    <section id="page-home" class="page active">
+        <div class="hero">
+            <div class="hero-bg">
+                <div class="hero-orb hero-orb-1"></div>
+                <div class="hero-orb hero-orb-2"></div>
+                <div class="hero-orb hero-orb-3"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-badge">🚀 Powered by IA + Receita Federal</div>
+                <h1 class="hero-title">
+                    Encontre seus <span class="gradient-text">clientes ideais</span> em qualquer região do Brasil
+                </h1>
+                <p class="hero-subtitle">
+                    Prospecção inteligente B2B com dados reais de mais de 50 milhões de empresas. 
+                    Descreva seu negócio e nossa IA encontra compradores potenciais para você.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg" onclick="showModal('register')">
+                        Comece Agora — Grátis
+                    </button>
+                    <button class="btn btn-outline btn-lg" onclick="showPage('search')">
+                        Ver Demonstração
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="statCompanies">0</span>
+                        <span class="stat-label">Empresas na Base</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="statStates">0</span>
+                        <span class="stat-label">Estados Importados</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="statCnaes">0</span>
+                        <span class="stat-label">Setores Mapeados</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features-section">
+            <div class="container">
+                <h2 class="section-title">Como funciona</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>1. Descreva seu negócio</h3>
+                        <p>Informe o ramo de atuação da sua empresa. Nossa IA interpreta semanticamente o que você vende.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📍</div>
+                        <h3>2. Escolha a região</h3>
+                        <p>Selecione o estado e cidade. Focamos na região que importa para o seu negócio.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>3. IA encontra clientes</h3>
+                        <p>Cruzamos seu ramo com a cadeia produtiva para encontrar quem compraria de você.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>4. Lista completa</h3>
+                        <p>Receba nome, CNPJ, endereço, telefone e e-mail de empresas reais e ativas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Page -->
+    <section id="page-search" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Prospectar Clientes</h1>
+                <p class="page-description">Descreva seu negócio e encontre compradores potenciais na região desejada.</p>
+            </div>
+
+            <div class="search-panel">
+                <div class="search-form glass-card">
+                    <div class="form-group">
+                        <label for="businessSector">Ramo de atuação da sua empresa</label>
+                        <textarea id="businessSector" placeholder="Ex: Distribuidora de artigos técnicos industriais, equipamentos de segurança e ferramentas..." rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stateSelect">Estado</label>
+                            <select id="stateSelect" onchange="loadCities()">
+                                <option value="">Selecione o estado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="citySelect">Cidade</label>
+                            <select id="citySelect" required>
+                                <option value="">Selecione a cidade</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg btn-full" onclick="searchProspects()" id="searchBtn">
+                        <span class="btn-icon">🔍</span>
+                        Buscar Clientes Potenciais
+                    </button>
+                </div>
+
+                <!-- Results -->
+                <div id="searchResults" class="search-results hidden">
+                    <div class="results-header glass-card">
+                        <div class="results-summary" id="resultsSummary"></div>
+                        <div class="results-meta">
+                            <span id="resultsCount" class="results-count"></span>
+                            <div class="results-matched-cnaes" id="matchedCnaes"></div>
+                        </div>
+                    </div>
+
+                    <div class="results-list" id="resultsList"></div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="searchLoading" class="loading-state hidden">
+                    <div class="loading-spinner"></div>
+                    <p>Analisando seu ramo e buscando clientes...</p>
+                    <p class="loading-sub">A IA está processando os dados. Isso pode levar alguns segundos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Management Page -->
+    <section id="page-data" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Base de Dados</h1>
+                <p class="page-description">Importe dados da Receita Federal para alimentar o sistema de prospecção.</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="data-stats" id="dataStats">
+                <div class="stat-card glass-card">
+                    <div class="stat-card-icon">🏢</div>
+                    <div class="stat-card-value" id="dbCompanies">0</div>
+                    <div class="stat-card-label">Empresas</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-card-icon">📊</div>
+                    <div class="stat-card-value" id="dbCnaes">0</div>
+                    <div class="stat-card-label">CNAEs</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-card-icon">🏙️</div>
+                    <div class="stat-card-value" id="dbMunicipalities">0</div>
+                    <div class="stat-card-label">Municípios</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-card-icon">🗺️</div>
+                    <div class="stat-card-value" id="dbStates">0</div>
+                    <div class="stat-card-label">Estados</div>
+                </div>
+            </div>
+
+            <!-- Import Panel -->
+            <div class="import-panel glass-card">
+                <h2>Importar Dados</h2>
+                <p>Selecione um estado para importar dados da Receita Federal. Os arquivos são grandes e o processo pode demorar.</p>
+                
+                <div class="import-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="importState">Estado para importar</label>
+                            <select id="importState">
+                                <option value="">Selecione o estado</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="startImport()" id="importBtn">
+                            Iniciar Importação
+                        </button>
+                    </div>
+                </div>
+
+                <div class="import-warning">
+                    <span class="warning-icon">⚠️</span>
+                    <div>
+                        <strong>Atenção:</strong> A importação baixa dados diretamente do servidor da Receita Federal. 
+                        Cada arquivo tem centenas de MB. O processo pode levar de 30 minutos a algumas horas dependendo 
+                        da sua conexão e do tamanho do estado.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Status -->
+            <div id="importStatus" class="import-status hidden">
+                <div class="glass-card">
+                    <h3>Status da Importação</h3>
+                    <div id="importStatusList"></div>
+                </div>
+            </div>
+
+            <!-- States Imported -->
+            <div id="statesImported" class="states-imported hidden">
+                <div class="glass-card">
+                    <h3>Estados na Base de Dados</h3>
+                    <div id="statesList" class="states-list"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="modal-login">
+        <div class="modal glass-card">
+            <button class="modal-close" onclick="closeModal('login')">&times;</button>
+            <h2>Entrar</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                <p class="modal-footer-text">
+                    Não tem conta? <a href="#" onclick="switchModal('login', 'register')">Cadastre-se</a>
+                </p>
+            </form>
+            <div id="loginError" class="form-error hidden"></div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="modal-register">
+        <div class="modal glass-card">
+            <button class="modal-close" onclick="closeModal('register')">&times;</button>
+            <h2>Criar Conta</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regCompany">Nome da Empresa</label>
+                    <input type="text" id="regCompany" placeholder="Sua empresa LTDA" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">E-mail</label>
+                    <input type="email" id="regEmail" placeholder="contato@empresa.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Senha</label>
+                    <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="regSector">Ramo de Atuação</label>
+                    <input type="text" id="regSector" placeholder="Ex: Distribuidora de artigos industriais">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Criar Conta</button>
+                <p class="modal-footer-text">
+                    Já tem conta? <a href="#" onclick="switchModal('register', 'login')">Entrar</a>
+                </p>
+            </form>
+            <div id="registerError" class="form-error hidden"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

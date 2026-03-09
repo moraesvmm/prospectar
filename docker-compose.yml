@@ -1,0 +1,11 @@
+services:
+  prospectabr:
+    build: .
+    container_name: prospectabr
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - SECRET_KEY=change-this-to-a-strong-secret-key-in-production
+    restart: unless-stopped

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ProspectaBR - Sistema inteligente de prospecção B2B. Encontre clientes reais usando dados da Receita Federal e Inteligência Artificial.">
-    <title>ProspectaBR — Prospecção Inteligente de Clientes</title>
+    <meta name="description" content="ProspectaBR - Geração de Leads B2B On-the-fly com IA">
+    <title>ProspectaBR — Prospecção Instantânea</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,18 +30,10 @@
         </div>
         <div class="nav-links" id="navLinks">
             <a href="#" onclick="showPage('home')" class="nav-link active" id="nav-home">Início</a>
-            <a href="#" onclick="showPage('search')" class="nav-link" id="nav-search">Prospectar</a>
-            <a href="#" onclick="showPage('data')" class="nav-link" id="nav-data">Base de Dados</a>
+            <a href="#" onclick="showPage('search')" class="nav-link" id="nav-search">Nova Pesquisa</a>
         </div>
         <div class="nav-actions">
-            <div id="authButtons">
-                <button class="btn btn-ghost" onclick="showModal('login')">Entrar</button>
-                <button class="btn btn-primary" onclick="showModal('register')">Cadastrar</button>
-            </div>
-            <div id="userMenu" class="user-menu hidden">
-                <span id="userName" class="user-name"></span>
-                <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
-            </div>
+            <!-- No Auth Needed anymore -->
         </div>
     </nav>
 
@@ -54,40 +46,21 @@
                 <div class="hero-orb hero-orb-3"></div>
             </div>
             <div class="hero-content">
-                <div class="hero-badge">🚀 Powered by IA + Receita Federal</div>
+                <div class="hero-badge">🚀 Powered by AI Matcher</div>
                 <h1 class="hero-title">
-                    Encontre seus <span class="gradient-text">clientes ideais</span> em qualquer região do Brasil
+                    Gere leads B2B <span class="gradient-text">em tempo real</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Prospecção inteligente B2B com dados reais de mais de 50 milhões de empresas. 
-                    Descreva seu negócio e nossa IA encontra compradores potenciais para você.
+                    Nosso sistema de IA entende o seu negócio, descobre seu cliente ideal e faz uma varredura na internet em tempo real. E tudo é enviado em formato de planilha para o seu e-mail.
                 </p>
                 <div class="hero-actions">
-                    <button class="btn btn-primary btn-lg" onclick="showModal('register')">
-                        Comece Agora — Grátis
+                    <button class="btn btn-primary btn-lg" onclick="showPage('search')">
+                        Iniciar Varredura Grátis
                     </button>
-                    <button class="btn btn-outline btn-lg" onclick="showPage('search')">
-                        Ver Demonstração
-                    </button>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="statCompanies">0</span>
-                        <span class="stat-label">Empresas na Base</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="statStates">0</span>
-                        <span class="stat-label">Estados Importados</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="statCnaes">0</span>
-                        <span class="stat-label">Setores Mapeados</span>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Features -->
         <div class="features-section">
             <div class="container">
                 <h2 class="section-title">Como funciona</h2>
@@ -95,22 +68,22 @@
                     <div class="feature-card">
                         <div class="feature-icon">📝</div>
                         <h3>1. Descreva seu negócio</h3>
-                        <p>Informe o ramo de atuação da sua empresa. Nossa IA interpreta semanticamente o que você vende.</p>
+                        <p>Nossa IA interpreta semanticamente o que você vende.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📍</div>
-                        <h3>2. Escolha a região</h3>
-                        <p>Selecione o estado e cidade. Focamos na região que importa para o seu negócio.</p>
+                        <h3>2. Onde buscar</h3>
+                        <p>Diga a cidade desejada. Varremos as empresas locais.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">🤖</div>
-                        <h3>3. IA encontra clientes</h3>
-                        <p>Cruzamos seu ramo com a cadeia produtiva para encontrar quem compraria de você.</p>
+                        <div class="feature-icon">⚡</div>
+                        <h3>3. Busca ao Vivo</h3>
+                        <p>Não usamos bancos defasados. Buscamos contatos atualizados na hora.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">📋</div>
-                        <h3>4. Lista completa</h3>
-                        <p>Receba nome, CNPJ, endereço, telefone e e-mail de empresas reais e ativas.</p>
+                        <div class="feature-icon">📩</div>
+                        <h3>4. Receba a Planilha</h3>
+                        <p>O CSV do raio-x vai para o seu e-mail instantaneamente.</p>
                     </div>
                 </div>
             </div>
@@ -121,16 +94,22 @@
     <section id="page-search" class="page">
         <div class="container">
             <div class="page-header">
-                <h1 class="page-title">Prospectar Clientes</h1>
-                <p class="page-description">Descreva seu negócio e encontre compradores potenciais na região desejada.</p>
+                <h1 class="page-title">Nova Varredura</h1>
+                <p class="page-description">Informe seus dados para a inteligência artificial varrer o mercado agora.</p>
             </div>
 
             <div class="search-panel">
                 <div class="search-form glass-card">
                     <div class="form-group">
-                        <label for="businessSector">Ramo de atuação da sua empresa</label>
-                        <textarea id="businessSector" placeholder="Ex: Distribuidora de artigos técnicos industriais, equipamentos de segurança e ferramentas..." rows="3"></textarea>
+                        <label for="businessSector">O que sua empresa vende ou faz? (Deixe a IA decidir quem será seu cliente)</label>
+                        <textarea id="businessSector" placeholder="Ex: Fabricamos embalagens plásticas e papelão..." rows="3"></textarea>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="userEmail">Seu E-mail (Para receber a planilha com os Leads em CSV)</label>
+                        <input type="email" id="userEmail" placeholder="seu@email.com" required>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="stateSelect">Estado</label>
@@ -146,18 +125,21 @@
                         </div>
                     </div>
                     <button class="btn btn-primary btn-lg btn-full" onclick="searchProspects()" id="searchBtn">
-                        <span class="btn-icon">🔍</span>
-                        Buscar Clientes Potenciais
+                        <span class="btn-icon">⚡</span>
+                        Gerar Lista de Prospectos
                     </button>
                 </div>
 
                 <!-- Results -->
                 <div id="searchResults" class="search-results hidden">
-                    <div class="results-header glass-card">
+                    <div class="results-header glass-card" style="border: 2px solid #06b6d4;">
                         <div class="results-summary" id="resultsSummary"></div>
-                        <div class="results-meta">
-                            <span id="resultsCount" class="results-count"></span>
-                            <div class="results-matched-cnaes" id="matchedCnaes"></div>
+                    </div>
+
+                    <div class="results-meta" style="margin-top: 20px;">
+                        <span id="resultsCount" class="results-count"></span>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-outline" onclick="downloadCSV()">Baixar CSV Agora</button>
                         </div>
                     </div>
 
@@ -167,145 +149,12 @@
                 <!-- Loading State -->
                 <div id="searchLoading" class="loading-state hidden">
                     <div class="loading-spinner"></div>
-                    <p>Analisando seu ramo e buscando clientes...</p>
-                    <p class="loading-sub">A IA está processando os dados. Isso pode levar alguns segundos.</p>
+                    <p>IA analisando e varrendo a região em tempo real...</p>
+                    <p class="loading-sub">Isso pode levar alguns segundos. Não feche a página.</p>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Data Management Page -->
-    <section id="page-data" class="page">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Base de Dados</h1>
-                <p class="page-description">Importe dados da Receita Federal para alimentar o sistema de prospecção.</p>
-            </div>
-
-            <!-- Stats -->
-            <div class="data-stats" id="dataStats">
-                <div class="stat-card glass-card">
-                    <div class="stat-card-icon">🏢</div>
-                    <div class="stat-card-value" id="dbCompanies">0</div>
-                    <div class="stat-card-label">Empresas</div>
-                </div>
-                <div class="stat-card glass-card">
-                    <div class="stat-card-icon">📊</div>
-                    <div class="stat-card-value" id="dbCnaes">0</div>
-                    <div class="stat-card-label">CNAEs</div>
-                </div>
-                <div class="stat-card glass-card">
-                    <div class="stat-card-icon">🏙️</div>
-                    <div class="stat-card-value" id="dbMunicipalities">0</div>
-                    <div class="stat-card-label">Municípios</div>
-                </div>
-                <div class="stat-card glass-card">
-                    <div class="stat-card-icon">🗺️</div>
-                    <div class="stat-card-value" id="dbStates">0</div>
-                    <div class="stat-card-label">Estados</div>
-                </div>
-            </div>
-
-            <!-- Import Panel -->
-            <div class="import-panel glass-card">
-                <h2>Importar Dados</h2>
-                <p>Selecione um estado para importar dados da Receita Federal. Os arquivos são grandes e o processo pode demorar.</p>
-                
-                <div class="import-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="importState">Estado para importar</label>
-                            <select id="importState">
-                                <option value="">Selecione o estado</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary" onclick="startImport()" id="importBtn">
-                            Iniciar Importação
-                        </button>
-                    </div>
-                </div>
-
-                <div class="import-warning">
-                    <span class="warning-icon">⚠️</span>
-                    <div>
-                        <strong>Atenção:</strong> A importação baixa dados diretamente do servidor da Receita Federal. 
-                        Cada arquivo tem centenas de MB. O processo pode levar de 30 minutos a algumas horas dependendo 
-                        da sua conexão e do tamanho do estado.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Import Status -->
-            <div id="importStatus" class="import-status hidden">
-                <div class="glass-card">
-                    <h3>Status da Importação</h3>
-                    <div id="importStatusList"></div>
-                </div>
-            </div>
-
-            <!-- States Imported -->
-            <div id="statesImported" class="states-imported hidden">
-                <div class="glass-card">
-                    <h3>Estados na Base de Dados</h3>
-                    <div id="statesList" class="states-list"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="modal-login">
-        <div class="modal glass-card">
-            <button class="modal-close" onclick="closeModal('login')">&times;</button>
-            <h2>Entrar</h2>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-                <p class="modal-footer-text">
-                    Não tem conta? <a href="#" onclick="switchModal('login', 'register')">Cadastre-se</a>
-                </p>
-            </form>
-            <div id="loginError" class="form-error hidden"></div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div class="modal-overlay" id="modal-register">
-        <div class="modal glass-card">
-            <button class="modal-close" onclick="closeModal('register')">&times;</button>
-            <h2>Criar Conta</h2>
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="regCompany">Nome da Empresa</label>
-                    <input type="text" id="regCompany" placeholder="Sua empresa LTDA" required>
-                </div>
-                <div class="form-group">
-                    <label for="regEmail">E-mail</label>
-                    <input type="email" id="regEmail" placeholder="contato@empresa.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">Senha</label>
-                    <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="regSector">Ramo de Atuação</label>
-                    <input type="text" id="regSector" placeholder="Ex: Distribuidora de artigos industriais">
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Criar Conta</button>
-                <p class="modal-footer-text">
-                    Já tem conta? <a href="#" onclick="switchModal('register', 'login')">Entrar</a>
-                </p>
-            </form>
-            <div id="registerError" class="form-error hidden"></div>
-        </div>
-    </div>
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="toast-container"></div>

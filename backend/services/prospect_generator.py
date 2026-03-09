@@ -61,56 +61,78 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
     # Nova Inteligência (NLP Básico + Heurística)
     # Substitui a velha TF-IDF cega por análise do funil B2B.
     # ==========================
-    desc_lower = business_description.lower()
+    desc_lower = business_description.lower().strip()
     
-    # Remove fillers
-    for word in [' de ', ' para ', ' em ', ' com ', ' a ', ' o ', ' as ', ' os ']:
-        desc_lower = desc_lower.replace(word, ' ')
-        
-    words = desc_lower.split()
+    # Remove acentuações simples se quiser, mas SerpApi/Google é resiliente.
+    target_focus = ""
     
-    # Palavras chaves do PRODUTO em si (tirando os verbos da empresa do usuario)
-    product_keywords = [w for w in words if w not in ['distribuidora', 'distribuidor', 'fabricante', 'fábrica', 'fabrica', 'serviço', 'manutenção', 'consultoria', 'venda', 'vendedor', 'atacado', 'varejo', 'loja', 'comércio', 'agência']]
-    core_product = " ".join(product_keywords[:3]) if product_keywords else business_description
+    # 1. Extração estruturada (Ex: "peças PARA maquinários")
+    if " para " in desc_lower:
+        target_focus = desc_lower.split(" para ", 1)[1].strip()
+    elif " voltado a " in desc_lower:
+        target_focus = desc_lower.split(" voltado a ", 1)[1].strip()
+    elif " focado em " in desc_lower:
+        target_focus = desc_lower.split(" focado em ", 1)[1].strip()
+
+    # Filtra palavras inúteis do alvo final
+    for word in [' de ', ' em ', ' com ', ' a ', ' o ', ' as ', ' os ']:
+        if target_focus:
+            target_focus = target_focus.replace(word, ' ')
     
     client_div_names = []
     
-    # Regras de Funil B2B:
-    if "distribuidor" in desc_lower or "atacado" in desc_lower:
-        # Se usuário é distribuidor, ele vende para Lojistas (Varejo), Instaladores/Manutenção, ou Fábricas.
+    if target_focus:
+        # O usuário supre uma necessidade do "target" (Ex: maquinários). Seus clientes constroem, mantêm ou utilizam esse alvo.
+        words = target_focus.split()[:4] # Pegamos apenas as palavras centrais para não confundir o Google
+        core_product = " ".join(words)
+        
         client_div_names = [
-            f"Fábricas de {core_product}", 
-            f"Indústrias de {core_product}",
-            f"Lojas de {core_product}",
-            f"Manutenção de {core_product}",
-            f"Assistência técnica de {core_product}"
-        ]
-    elif "fabricante" in desc_lower or "fábrica" in desc_lower or "fabrica" in desc_lower or "indústria" in desc_lower:
-        # Se usuário fabrica, ele vende para Distribuidores, Atacados, Lojas, Redes, Varejo.
-        client_div_names = [
-            f"Distribuidores de {core_product}",
-            f"Comércio atacadista de {core_product}",
-            f"Lojas de {core_product}",
-            f"Revendas de {core_product}"
-        ]
-    elif "manutenção" in desc_lower or "serviço" in desc_lower or "consultoria" in desc_lower or "agência" in desc_lower:
-        # Se presta serviço sobre algo, vende para empresas corporativas, indústrias daquele nicho ou escritórios
-        client_div_names = [
-            f"Empresas de {core_product}",
-            f"Indústrias de {core_product}",
-            f"Clínicas de {core_product}",
-            f"Escritórios de {core_product}"
+            f"Fabricante de {core_product}",
+            f"Fábricas de {core_product}",
+            f"Indústria de {core_product}",
+            f"Montadora de {core_product}",
+            f"Manutenção de {core_product}"
         ]
     else:
-        # Genérico:
-        client_div_names = [
-            f"Empresas de {core_product}",
-            f"Fábricas de {core_product}",
-            f"Lojas de {core_product}",
-            f"Comércio de {core_product}"
-        ]
+        # Se a pessoa só colocou "Fabricante de Plástico" ou "Distribuidora de Alimentos"
+        for word in [' de ', ' em ', ' com ', ' a ', ' o ', ' as ', ' os ']:
+            desc_lower = desc_lower.replace(word, ' ')
+            
+        words = desc_lower.split()
+        product_keywords = [w for w in words if w not in ['distribuidora', 'distribuidor', 'fabricante', 'fábrica', 'fabrica', 'serviço', 'manutenção', 'consultoria', 'venda', 'vendedor', 'atacado', 'varejo', 'loja', 'comércio', 'agência', 'agencia']]
+        core_product = " ".join(product_keywords[:3]) if product_keywords else business_description
         
-    # Limita para as 3 melhores queries
+        # Regras de Funil B2B Inverso:
+        if "distribuidor" in desc_lower or "atacado" in desc_lower:
+            client_div_names = [
+                f"Lojas de {core_product}",
+                f"Comércio de {core_product}",
+                f"Manutenção de {core_product}",
+                f"Fábricas de {core_product}",
+                f"Indústrias de {core_product}"
+            ]
+        elif "fabricante" in desc_lower or "fábrica" in desc_lower or "fabrica" in desc_lower or "indústria" in desc_lower:
+            client_div_names = [
+                f"Distribuidores de {core_product}",
+                f"Comércio atacadista de {core_product}",
+                f"Revendas de {core_product}",
+                f"Lojas de {core_product}"
+            ]
+        elif "manutenção" in desc_lower or "serviço" in desc_lower or "consultoria" in desc_lower:
+            client_div_names = [
+                f"Empresas de {core_product}",
+                f"Indústrias de {core_product}",
+                f"Escritórios de {core_product}"
+            ]
+        else:
+            client_div_names = [
+                f"Empresas de {core_product}",
+                f"Fábricas de {core_product}",
+                f"Lojas de {core_product}",
+                f"Comércio de {core_product}"
+            ]
+        
+    # Limita para as 3 melhores queries (garantindo diversidade)
     client_div_names = list(dict.fromkeys(client_div_names))[:3]
     matched_cnae_info = [{"description": core_product, "score": 0.99}]
 

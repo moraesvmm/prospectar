@@ -18,3 +18,4 @@ class ProspectSearchResponse(BaseModel):
     message: str
     search_summary: str
     results_found: int
+    results: List[ProspectResult]

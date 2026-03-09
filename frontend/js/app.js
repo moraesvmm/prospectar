@@ -199,14 +199,16 @@ function displayResults(data) {
         const card = document.createElement('div');
         card.className = 'company-card glass-card';
         
+        let linkTag = company.website !== 'Não disponível' && company.website !== 'Não informou' ? `<a href="${company.website}" target="_blank" rel="noopener noreferrer">${company.website}</a>` : '<span style="color:#777">Não disponível</span>';
+
         card.innerHTML = `
             <div class="company-header">
                 <h3 class="company-name">${company.nome_empresa}</h3>
+                <span class="company-badge" style="font-size:0.75rem; background:#06b6d4; color:#fff; padding:3px 8px; border-radius:12px;">${company.setor}</span>
             </div>
             <div class="company-body">
-                <div class="company-info-item">
-                    <span class="info-label">🟢 Setor IA</span>
-                    <span class="info-value"><strong>${company.setor}</strong></span>
+                <div class="company-info-item" style="color: #cbd5e1; font-style: italic; font-size: 0.9em; margin-bottom: 15px; border-left: 3px solid #06b6d4; padding-left: 10px;">
+                    ${company.motivo_venda}
                 </div>
                 <div class="company-info-item">
                     <span class="info-label">📍 Endereço</span>
@@ -218,7 +220,7 @@ function displayResults(data) {
                 </div>
                 <div class="company-info-item">
                     <span class="info-label">🌐 Web</span>
-                    <span class="info-value" style="color:#06b6d4;">${company.website}</span>
+                    <span class="info-value">${linkTag}</span>
                 </div>
             </div>
         `;
@@ -232,7 +234,7 @@ function downloadCSV() {
         return;
     }
 
-    const headers = ['Nome da Empresa', 'Setor Detectado (IA)', 'Telefone', 'Endereço', 'Website'];
+    const headers = ['Nome da Empresa', 'Segmento', 'Telefone', 'Endereço', 'Website', 'Gatilho de Venda (Uso Recomendado)'];
     
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // \uFEFF for BOM in excel pt-BR
     csvContent += headers.join(';') + "\r\n";
@@ -243,7 +245,8 @@ function downloadCSV() {
             `"${r.setor || ''}"`,
             `"${r.telefone || ''}"`,
             `"${r.endereco || ''}"`,
-            `"${r.website || ''}"`
+            `"${r.website || ''}"`,
+            `"${r.motivo_venda || ''}"`
         ];
         csvContent += row.join(';') + "\r\n";
     });

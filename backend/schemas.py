@@ -13,6 +13,7 @@ class ProspectResult(BaseModel):
     telefone: Optional[str]
     endereco: Optional[str]
     website: Optional[str]
+    motivo_venda: Optional[str]
 
 class ProspectSearchResponse(BaseModel):
     message: str

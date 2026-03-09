@@ -95,6 +95,12 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
             break
             
         try:
+            # Geramos o gatilho de venda cruzando o que o usuario faz com o que esta empresa alvo faz
+            # Para evitar estourar limites de LLM, fazemos isso logicamente.
+            seller_product = business_description.split()[0:5]
+            seller_product_short = " ".join(seller_product)
+            motivo_venda = f"Empresas do setor de {sector} costumam demandar '{seller_product_short}...' como insumo operacional, serviço de apoio estratégico ou infraestrutura do negócio."
+
             query = f"{sector} em {municipio}, {uf}"
             encoded_query = urllib.parse.quote(query)
             # engine=google_maps or engine=google (local)
@@ -110,12 +116,22 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
                         if len(results) >= limit:
                             break
                         
+                        site = place.get("website", "")
+                        if not site:
+                            site = "Não disponível"
+                            
+                        # Limpa categorias esquisitas em inglês do Google pra pt-BR do buscador
+                        tipo_lugar = place.get("type", sector)
+                        if tipo_lugar and isinstance(tipo_lugar, str):
+                            tipo_lugar = tipo_lugar.replace("company", "Empresa").replace("Manufacturer", "Indústria").replace("Store", "Loja")
+                            
                         results.append({
                             "nome_empresa": place.get("title", ""),
-                            "setor": place.get("type", sector),
+                            "setor": tipo_lugar,
                             "telefone": place.get("phone", "Não disponível"),
                             "endereco": place.get("address", f"{municipio}, {uf}"),
-                            "website": place.get("website", "Não informou")
+                            "website": site,
+                            "motivo_venda": motivo_venda
                         })
         except Exception as e:
             logger.error(f"Erro ao buscar no SerpApi para {sector}: {e}")

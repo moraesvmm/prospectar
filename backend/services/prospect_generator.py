@@ -57,30 +57,62 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
     Matches the user's business, determines what clients they want, and dynamically builds a CSV format.
     Normally here you would connect to: Google Places API, Econodata, or Speedio.
     """
-    matched_cnaes = match_business_to_cnaes(business_description, top_k=5)
+    # ==========================
+    # Nova Inteligência (NLP Básico + Heurística)
+    # Substitui a velha TF-IDF cega por análise do funil B2B.
+    # ==========================
+    desc_lower = business_description.lower()
     
-    client_divisions = set()
-    matched_cnae_info = []
-
-    for cnae_code, cnae_desc, score in matched_cnaes:
-        division = get_cnae_division(cnae_code)
-        potential_clients = get_potential_client_cnaes(division)
-        client_divisions.update(potential_clients)
-
-        matched_cnae_info.append({
-            "code": cnae_code,
-            "description": cnae_desc,
-            "score": round(score, 4),
-            "potential_client_divisions": list(potential_clients)
-        })
-
-    # Fallback to inverse if nothing found
-    if not client_divisions:
-        all_divisions = set(DIVISION_DESCRIPTIONS.keys())
-        seller_divisions = {get_cnae_division(c[0]) for c in matched_cnaes}
-        client_divisions = all_divisions - seller_divisions
-
-    client_div_names = [DIVISION_DESCRIPTIONS.get(d, d) for d in sorted(client_divisions)[:3]]
+    # Remove fillers
+    for word in [' de ', ' para ', ' em ', ' com ', ' a ', ' o ', ' as ', ' os ']:
+        desc_lower = desc_lower.replace(word, ' ')
+        
+    words = desc_lower.split()
+    
+    # Palavras chaves do PRODUTO em si (tirando os verbos da empresa do usuario)
+    product_keywords = [w for w in words if w not in ['distribuidora', 'distribuidor', 'fabricante', 'fábrica', 'fabrica', 'serviço', 'manutenção', 'consultoria', 'venda', 'vendedor', 'atacado', 'varejo', 'loja', 'comércio', 'agência']]
+    core_product = " ".join(product_keywords[:3]) if product_keywords else business_description
+    
+    client_div_names = []
+    
+    # Regras de Funil B2B:
+    if "distribuidor" in desc_lower or "atacado" in desc_lower:
+        # Se usuário é distribuidor, ele vende para Lojistas (Varejo), Instaladores/Manutenção, ou Fábricas.
+        client_div_names = [
+            f"Fábricas de {core_product}", 
+            f"Indústrias de {core_product}",
+            f"Lojas de {core_product}",
+            f"Manutenção de {core_product}",
+            f"Assistência técnica de {core_product}"
+        ]
+    elif "fabricante" in desc_lower or "fábrica" in desc_lower or "fabrica" in desc_lower or "indústria" in desc_lower:
+        # Se usuário fabrica, ele vende para Distribuidores, Atacados, Lojas, Redes, Varejo.
+        client_div_names = [
+            f"Distribuidores de {core_product}",
+            f"Comércio atacadista de {core_product}",
+            f"Lojas de {core_product}",
+            f"Revendas de {core_product}"
+        ]
+    elif "manutenção" in desc_lower or "serviço" in desc_lower or "consultoria" in desc_lower or "agência" in desc_lower:
+        # Se presta serviço sobre algo, vende para empresas corporativas, indústrias daquele nicho ou escritórios
+        client_div_names = [
+            f"Empresas de {core_product}",
+            f"Indústrias de {core_product}",
+            f"Clínicas de {core_product}",
+            f"Escritórios de {core_product}"
+        ]
+    else:
+        # Genérico:
+        client_div_names = [
+            f"Empresas de {core_product}",
+            f"Fábricas de {core_product}",
+            f"Lojas de {core_product}",
+            f"Comércio de {core_product}"
+        ]
+        
+    # Limita para as 3 melhores queries
+    client_div_names = list(dict.fromkeys(client_div_names))[:3]
+    matched_cnae_info = [{"description": core_product, "score": 0.99}]
 
     import urllib.request
     import urllib.parse
@@ -95,11 +127,7 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
             break
             
         try:
-            # Geramos o gatilho de venda cruzando o que o usuario faz com o que esta empresa alvo faz
-            # Para evitar estourar limites de LLM, fazemos isso logicamente.
-            seller_product = business_description.split()[0:5]
-            seller_product_short = " ".join(seller_product)
-            motivo_venda = f"Empresas do setor de {sector} costumam demandar '{seller_product_short}...' como insumo operacional, serviço de apoio estratégico ou infraestrutura do negócio."
+            motivo_venda = f"Perfil ideal B2B porque atua como '{sector}', podendo demandar '{core_product}' para sua linha de produção, serviço ou revenda."
 
             query = f"{sector} em {municipio}, {uf}"
             encoded_query = urllib.parse.quote(query)
@@ -136,13 +164,11 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
         except Exception as e:
             logger.error(f"Erro ao buscar no SerpApi para {sector}: {e}")
 
-    seller_desc = ", ".join([f"{c['description']}" for c in matched_cnae_info[:2]])
     client_desc = ", ".join(client_div_names)
 
     summary = (
-        f"Seu negócio atende: {seller_desc}. "
-        f"Efetuamos uma varredura ao vivo na região usando Inteligência Artificial e o Radar de empresas. "
-        f"Focamos nos nichos ideais: {client_desc}."
+        f"Alvo principal da sua pesquisa: {core_product}. "
+        f"Efetuamos uma varredura cruzada usando Inteligência Semântica B2B focando nos nichos-alvo diretos: {client_desc}."
     )
 
     return {

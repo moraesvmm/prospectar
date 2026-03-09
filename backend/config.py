@@ -29,3 +29,4 @@ ESTADOS_BRASIL = {
 }
 
 SENTENCE_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+SERPAPI_KEY = os.getenv("SERPAPI_KEY", "57a1cba293b9dad25b878b00937637d8e6cab420bdfa6066904351a4ad1079b1")

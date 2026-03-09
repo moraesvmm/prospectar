@@ -80,35 +80,53 @@ def generate_prospects(business_description: str, uf: str, municipio: str, limit
         seller_divisions = {get_cnae_division(c[0]) for c in matched_cnaes}
         client_divisions = all_divisions - seller_divisions
 
-    client_div_names = [DIVISION_DESCRIPTIONS.get(d, d) for d in sorted(client_divisions)[:6]]
+    client_div_names = [DIVISION_DESCRIPTIONS.get(d, d) for d in sorted(client_divisions)[:3]]
 
-    # ==========================================
-    # ON THE FLY SEARCH: API INTEGRATION POINT #
-    # ==========================================
-    # Em produção, aqui você colocaria uma chamada GET real:
-    # requests.get(f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={client_div_name} em {municipio}, {uf}&key=ENV_KEY")
-    
-    # Vamos mockar o retorno "on-the-fly" com os ramos exatos descobertos!
+    import urllib.request
+    import urllib.parse
+    import json
+    from backend.config import SERPAPI_KEY
+
     results = []
-    found_count = random.randint(30, min(100, limit))
     
-    for i in range(found_count):
-        chosen_sector = random.choice(client_div_names)
-        results.append({
-            "nome_empresa": f"{chosen_sector.split(' ')[0]} {random.choice(['Center', 'Silva', 'Sul', 'Brasil', 'Global', 'Prime', 'Nacional'])}",
-            "setor": chosen_sector,
-            "telefone": f"({random.choice(['11', '31', '21', '41', '51'])}) 9{random.randint(7000,9999)}-{random.randint(1000,9999)}",
-            "endereco": f"Avenida Central, {random.randint(10, 1500)} - {municipio}/{uf}",
-            "website": f"www.empresa{i}br.com"
-        })
+    # Fazemos chamadas para os 3 principais ramos alvo na região
+    for sector in client_div_names:
+        if len(results) >= limit:
+            break
+            
+        try:
+            query = f"{sector} em {municipio}, {uf}"
+            encoded_query = urllib.parse.quote(query)
+            # engine=google_maps or engine=google (local)
+            url = f"https://serpapi.com/search.json?engine=google_maps&q={encoded_query}&type=search&api_key={SERPAPI_KEY}"
+            
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=10) as response:
+                if response.getcode() == 200:
+                    data = json.loads(response.read())
+                    local_results = data.get("local_results", [])
+                    
+                    for place in local_results:
+                        if len(results) >= limit:
+                            break
+                        
+                        results.append({
+                            "nome_empresa": place.get("title", ""),
+                            "setor": place.get("type", sector),
+                            "telefone": place.get("phone", "Não disponível"),
+                            "endereco": place.get("address", f"{municipio}, {uf}"),
+                            "website": place.get("website", "Não informou")
+                        })
+        except Exception as e:
+            logger.error(f"Erro ao buscar no SerpApi para {sector}: {e}")
 
     seller_desc = ", ".join([f"{c['description']}" for c in matched_cnae_info[:2]])
-    client_desc = ", ".join(client_div_names[:4])
+    client_desc = ", ".join(client_div_names)
 
     summary = (
         f"Seu negócio atende: {seller_desc}. "
-        f"Efetuamos uma varredura ao vivo na região e filtramos possíveis compradores qualificados nos nichos: {client_desc}. "
-        f"Abaixo estão os resultados extraídos instantaneamente."
+        f"Efetuamos uma varredura ao vivo na região usando Inteligência Artificial e o Radar de empresas. "
+        f"Focamos nos nichos ideais: {client_desc}."
     )
 
     return {

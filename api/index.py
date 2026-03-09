@@ -1,3 +1,5 @@
 from backend.main import app
+from backend.database import init_db
 
-# This file is used by Vercel to mount the FastAPI application.
+# Initialize database tables for Vercel
+init_db()
